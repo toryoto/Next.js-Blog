@@ -1,0 +1,22 @@
+{
+  "posts": [
+    {
+      "id": "next.js14-udemy",
+      "title": "Next.js14をUdemyで学ぶ",
+      "content": "Shincodeの教材でNext.jsを学ぶ",
+      "createdAt": "2024/07/01"
+    },
+    {
+      "id": "json-server",
+      "title": "JSON Server",
+      "content": "あああああああああああああいいいいいいいいいいいいいいいいうううううううううううううううう",
+      "createdAt": "2024/06/24"
+    },
+    {
+      "id": "hardhat-udemy",
+      "title": "HardhatUdemyで学ぶ",
+      "content": "Web3基礎のHardhatを学ぶ",
+      "createdAt": "2024/07/02"
+    }
+  ]
+}
