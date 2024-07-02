@@ -2,7 +2,7 @@
 
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { createArticle } from '@/blogAPI';
-import React from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation';
 
 type Inputs = {
@@ -14,16 +14,20 @@ type Inputs = {
 function CreateBlogPage() {
   const router = useRouter();
   const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
+      setLoading(true);
       await createArticle(data.url, data.title, data.content);
-
+      
       router.push("/");
       router.refresh();
-
     } catch (error) {
       console.log(error);
+      // エラー時の処理を追加（例：エラーメッセージの表示）
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,6 +49,7 @@ function CreateBlogPage() {
               placeholder='例: my-awesome-blog-post'
               {...register("url", { required: "URLは必須です" })}
             />
+            {errors.url && <p className="text-red-500 text-xs italic">{errors.url.message}</p>}
           </div>
           <div className='mb-4'>
             <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="title">タイトル</label>
@@ -55,6 +60,7 @@ function CreateBlogPage() {
               placeholder='記事のタイトルを入力してください'
               {...register("title", { required: "Titleは必須です" })}
             />
+            {errors.title && <p className="text-red-500 text-xs italic">{errors.title.message}</p>}
           </div>
           <div className='mb-6'>
             <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="content">本文</label>
@@ -65,13 +71,29 @@ function CreateBlogPage() {
               placeholder='記事の本文を入力してください...'
               {...register("content", { required: "本文は必須です" })}
             />
+            {errors.content && <p className="text-red-500 text-xs italic">{errors.content.message}</p>}
           </div>
 
           <button 
             type='submit' 
-            className='py-2 px-4 bg-orange-300 text-gray-800 font-bold rounded hover:bg-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition duration-150 ease-in-out'
+            className={`py-2 px-4 font-bold rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition duration-150 ease-in-out
+            ${loading 
+              ? "bg-orange-300 text-gray-500 cursor-not-allowed" 
+              : "bg-orange-400 text-gray-800 hover:bg-orange-500"
+            } flex items-center justify-center`}
+            disabled={loading}
           >
-            投稿
+            {loading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                処理中...
+              </>
+            ) : (
+              '投稿'
+            )}
           </button>
         </form>
       </div>
