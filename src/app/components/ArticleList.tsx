@@ -42,7 +42,7 @@ function ArticleList({ articles }: ArticleListProps) {
             </Link>
             <p className="text-sm pb-3">{article.createdAt}</p>
             <Link href={`articles/${article.id}`} className="text-slate-900 pb-6">
-              {article.content}
+              {article.content.length > 70 ? article.content.substring(0, 70) + '…' : article.content}
             </Link>
             <Link href={`articles/${article.id}`} className="uppercase text-gray-800 hover:text-black">
               続きを読む
