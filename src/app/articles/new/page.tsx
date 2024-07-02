@@ -1,12 +1,41 @@
+"use client";
+
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { createArticle } from '@/blogAPI';
 import React from 'react'
+import { useRouter } from 'next/navigation';
+
+type Inputs = {
+  url: string,
+  title: string,
+  content: string,
+}
 
 function CreateBlogPage() {
+  const router = useRouter();
+  const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    try {
+      await createArticle(data.url, data.title, data.content);
+
+      router.push("/");
+      router.refresh();
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className='min-h-screen bg-gray-100 py-8 px-4 md:px-12'>
       <div className='max-w-3xl mx-auto'>
         <h2 className='text-3xl font-bold text-gray-800 mb-6'>ブログ新規作成</h2>
 
-        <form className='bg-slate-200 p-6 rounded-lg shadow-lg'>
+        <form 
+          className='bg-slate-200 p-6 rounded-lg shadow-lg'
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <div className='mb-4'>
             <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="url">URL</label>
             <input
@@ -14,6 +43,7 @@ function CreateBlogPage() {
               type="text" 
               className='shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-300'
               placeholder='例: my-awesome-blog-post'
+              {...register("url", { required: "URLは必須です" })}
             />
           </div>
           <div className='mb-4'>
@@ -23,6 +53,7 @@ function CreateBlogPage() {
               type="text" 
               className='shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-300'
               placeholder='記事のタイトルを入力してください'
+              {...register("title", { required: "Titleは必須です" })}
             />
           </div>
           <div className='mb-6'>
@@ -32,6 +63,7 @@ function CreateBlogPage() {
               className='shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-300'
               rows={6}
               placeholder='記事の本文を入力してください...'
+              {...register("content", { required: "本文は必須です" })}
             />
           </div>
 
