@@ -1,13 +1,21 @@
+import { getDetailArticle } from '@/blogAPI';
 import Image from 'next/image'
 import React from 'react'
 
-const Article = ({params}: {params: {id: string}}) => {
-  console.log(params.id)
+const Article = async ({params}: {params: {id: string}}) => {
+  const detailArticle = await getDetailArticle(params.id);
+
+  const getRandomImageUrl = (id: string) => {
+    const numericValue = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const seed = numericValue % 1000; // 1000未満の値に制限
+    return `https://picsum.photos/seed/${seed}/800/300`;
+  };
+
   return (
     <article className='relative h-screen flex flex-col'>
       <div className='absolute inset-0 z-0'>
         <Image
-          src="https://picsum.photos/1920/1080"
+          src={getRandomImageUrl(detailArticle.id)}
           alt='Article background'
           fill
           sizes="100vw"
@@ -19,16 +27,11 @@ const Article = ({params}: {params: {id: string}}) => {
       <div className='relative z-10 flex-grow flex flex-col justify-center px-4 sm:px-6 lg:px-8'>
         <div className='max-w-3xl mx-auto'>
           <h1 className='text-4xl sm:text-5xl font-bold text-white mb-6 leading-tight'>
-            ここがタイトルです
+            {detailArticle.title}
           </h1>
           <div className='prose prose-lg prose-invert max-w-none'>
             <p className='text-xl text-white leading-relaxed'>
-              ここが本文です。長めの文章を想定して、十分な行間と適切なフォントサイズを設定しています。
-              読みやすさを重視し、背景画像の上でも見やすいように調整しました。記事の内容がここに続きます...
-            </p>
-            <p className='text-xl text-white leading-relaxed'>
-              二つ目の段落です。本文が長くなる場合でも、このようにして段落を分けることで
-              読みやすさを保つことができます。画面の高さに応じて、適切に表示されます。
+              {detailArticle.content}
             </p>
           </div>
         </div>

@@ -11,14 +11,23 @@ function ArticleList({ articles }: ArticleListProps) {
   if (!articles || articles.length === 0) {
     return <div>記事がありません。</div>;
   }
+
+  // String型のIDに基づいてランダムな画像URLを生成する関数
+  const getRandomImageUrl = (id: string) => {
+    // IDの文字列から数値を生成
+    const numericValue = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const seed = numericValue % 1000; // 1000未満の値に制限
+    return `https://picsum.photos/seed/${seed}/800/300`;
+  };
+
   return (
     <div>
       {articles.map((article) => (
         <article className="flex flex-col shadow my-4" key={article.id}>
           <Link href={`articles/${article.id}`} className="hover:opacity-75 relative w-full h-48">
             <Image
-              src="https://picsum.photos/800/300"
-              alt='Random article thumbnail'
+              src={getRandomImageUrl(article.id)}
+              alt={`Article thumbnail for ${article.title}`}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               style={{objectFit: "cover"}}
