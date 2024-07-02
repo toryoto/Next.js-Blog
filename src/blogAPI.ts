@@ -10,6 +10,8 @@ export const getAllArticles = async (): Promise<Article[]> => {
     throw new Error("エラーが発生しました");
   }
 
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+
   const articles = await res.json();
   return articles;
 }
