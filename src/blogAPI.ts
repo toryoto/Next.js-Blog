@@ -17,10 +17,10 @@ export const getAllArticles = async (): Promise<Article[]> => {
   return articles;
 }
 
-export const getDetailArticle = async (id: string): Promise<Article[]> => {
+export const getDetailArticle = async (id: string): Promise<Article> => {
   const res = await fetch(`http://localhost:3001/posts/${id}`, { next: { revalidate: 60 } }); // ISR
 
-  if (res.status === 400) {
+  if (res.status === 404) {
     notFound()
   }
 
@@ -30,6 +30,6 @@ export const getDetailArticle = async (id: string): Promise<Article[]> => {
 
   await new Promise((resolve) => setTimeout(resolve, 500));
 
-  const article = await res.json();
+  const article: Article = await res.json();
   return article;
 }
