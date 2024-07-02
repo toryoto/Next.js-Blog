@@ -1,7 +1,6 @@
 import { Article } from '@/types';
-import Link from 'next/link';
-import Image from 'next/image';
 import React from 'react'
+import { ArticleCard } from './ArticleCard';
 
 type ArticleListProps = {
   articles: Article[];
@@ -12,43 +11,10 @@ function ArticleList({ articles }: ArticleListProps) {
     return <div>記事がありません。</div>;
   }
 
-  // String型のIDに基づいてランダムな画像URLを生成する関数
-  const getRandomImageUrl = (id: string) => {
-    // IDの文字列から数値を生成
-    const numericValue = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const seed = numericValue % 1000; // 1000未満の値に制限
-    return `https://picsum.photos/seed/${seed}/800/300`;
-  };
-
   return (
     <div>
       {articles.map((article) => (
-        <article className="flex flex-col shadow my-4" key={article.id}>
-          <Link href={`articles/${article.id}`} className="hover:opacity-75 relative w-full h-48">
-            <Image
-              src={getRandomImageUrl(article.id)}
-              alt={`Article thumbnail for ${article.title}`}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              style={{objectFit: "cover"}}
-            />
-          </Link>
-          <div className="bg-white flex flex-col justify-start p-6">
-            <Link href={`articles/${article.id}`} className="text-blue-700 text-sm font-bold uppercase pb-4">
-              Technology
-            </Link>
-            <Link href={`articles/${article.id}`} className="text-slate-900 text-3xl font-bold hover:text-gray-700 pb-4">
-              {article.title}
-            </Link>
-            <p className="text-sm pb-3">{article.createdAt}</p>
-            <Link href={`articles/${article.id}`} className="text-slate-900 pb-6">
-              {article.content.length > 70 ? article.content.substring(0, 70) + '…' : article.content}
-            </Link>
-            <Link href={`articles/${article.id}`} className="uppercase text-gray-800 hover:text-black">
-              続きを読む
-            </Link>
-          </div>
-        </article>
+        <ArticleCard article={article} key={article.id} />
       ))}
     </div>
   )
