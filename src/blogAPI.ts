@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { Article } from "./types";
+import { Article, EditedArticle } from "./types";
+import { resolve } from "path";
 
 // 全データの取得は更新頻度が高いので、SSRを使用
 export const getAllArticles = async (): Promise<Article[]> => {
@@ -62,7 +63,6 @@ export const createArticle = async (
 
 export const deleteArticle = async (id: string): Promise<Article> => {
 
-
   const res = await fetch(`http://localhost:3001/posts/${id}`, {
      method: "DELETE"
   });
@@ -75,4 +75,37 @@ export const deleteArticle = async (id: string): Promise<Article> => {
 
   const deleteArticle: Article = await res.json();
   return deleteArticle;
+}
+
+export const editArticle = async (
+  id: string,
+  title: string,
+  content: string
+): Promise<Article> => {
+  try {
+    const res = await fetch(`http://localhost:3001/posts/${id}`, {
+      method: "PUT",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title,
+        content,
+        updatedAt: new Date().toISOString()
+      })
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(`ブログ更新時にエラーが発生しました: ${errorData.message || res.statusText}`);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    const editedArticle: Article = await res.json();
+    return editedArticle;
+  } catch (error) {
+    console.error("記事更新エラー:", error);
+    throw error;
+  }
 }
