@@ -4,11 +4,26 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { editArticle, getDetailArticle } from '@/blogAPI';
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation';
+import { Article } from '@/types';
 
 type Inputs = {
   url: string,
   title: string,
   content: string,
+}
+
+async function revalidateArticle(id: string) {
+  const res = await fetch('/api/revalidate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id }),
+  });
+  if (!res.ok) {
+    throw new Error('Failed to revalidate');
+  }
+  return res.json();
 }
 
 function EditBlogPage({ params }: { params: {id:string} }) {
@@ -36,12 +51,14 @@ function EditBlogPage({ params }: { params: {id:string} }) {
     try {
       setLoading(true);
       await editArticle(data.url, data.title, data.content);
+
+      // データの再検証
+      await revalidateArticle(data.url);
       
       router.push(`/articles/${data.url}`);
       router.refresh();
     } catch (error) {
       console.log(error);
-      // エラー時の処理を追加（例：エラーメッセージの表示）
     } finally {
       setLoading(false);
     }
