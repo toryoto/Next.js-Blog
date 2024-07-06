@@ -16,11 +16,43 @@ function CreateBlogPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
   const [loading, setLoading] = useState<boolean>(false);
 
+
+  async function createPost(inputs: { url: string; title: string; content: string }) {
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${API_URL}/api/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: inputs.url,
+          title: inputs.title,
+          content: inputs.content
+        }),
+      });
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to create post');
+      }
+  
+      return await res.json();
+    } catch (error) {
+      console.error('Error creating post:', error);
+      throw error;
+    }
+  }
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       setLoading(true);
-      await createArticle(data.url, data.title, data.content);
-      
+      // await createArticle(data.url, data.title, data.content);
+
+      // 投稿ボタンを押した後の処理で新しいブログ作成APIをたたく
+      const newPost = await createPost(data);
+      console.log('Created post:', newPost);
+
       router.push("/");
       router.refresh();
     } catch (error) {
