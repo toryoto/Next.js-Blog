@@ -101,9 +101,9 @@ function EditBlogPage({ params }: { params: {id:string} }) {
             <input
               id="url"
               type="text" 
-              className='shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-300'
+              className='shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none'
               placeholder='例: my-awesome-blog-post'
-              {...register("url", { required: "URLは必須です" })}
+              readOnly {...register("url", { required: "URLは必須です" })}
             />
             {errors.url && <p className="text-red-500 text-xs italic">{errors.url.message}</p>}
           </div>
