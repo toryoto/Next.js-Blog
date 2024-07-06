@@ -50,8 +50,7 @@ function CreateBlogPage() {
       // await createArticle(data.url, data.title, data.content);
 
       // 投稿ボタンを押した後の処理で新しいブログ作成APIをたたく
-      const newPost = await createPost(data);
-      console.log('Created post:', newPost);
+      await createPost(data);
 
       router.push("/");
       router.refresh();
@@ -79,7 +78,19 @@ function CreateBlogPage() {
               type="text" 
               className='shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-300'
               placeholder='例: my-awesome-blog-post'
-              {...register("url", { required: "URLは必須です" })}
+              {...register("url", { required: "URLは必須です",
+                pattern: {
+                  value: /^[a-z0-9]+(?:-[a-z0-9]+)*-?$/,
+                  message: "URLは小文字、数字、ハイフンのみ使用でき、末尾にはハイフンを含めることができます"
+                },
+                validate: {
+                  noConsecutiveHyphens: (value) => 
+                    !value.includes('--') || "連続したハイフンは使用できません",
+                  noLeadingTrailingHyphens: (value) => 
+                    (!value.startsWith('-') && !value.endsWith('-')) || "URLの先頭と末尾にハイフンは使用できません"
+                }
+              })}
+              
             />
             {errors.url && <p className="text-red-500 text-xs italic">{errors.url.message}</p>}
           </div>
