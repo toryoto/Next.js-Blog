@@ -16,7 +16,13 @@ const DeleteButton = ({ id }: DeleteButtonProps) => {
     if (window.confirm('本当にこの記事を削除しますか？')) {
       setIsDeleting(true);
       try {
-        await deleteArticle(id);
+        //await deleteArticle(id);
+
+        // Supabaseを使用したブログ削除処理
+        const API_URL = process.env.NEXT_PUBLIC_API_URL;
+        await fetch(`${API_URL}/api/posts/${id}`, {
+          method: "DELETE",
+        });
         
         router.push("/");
         router.refresh();
