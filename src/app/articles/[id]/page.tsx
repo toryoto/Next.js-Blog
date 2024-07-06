@@ -5,7 +5,16 @@ import Link from 'next/link';
 import React from 'react'
 
 const Article = async ({params}: {params: {id: string}}) => {
-  const detailArticle = await getDetailArticle(params.id);
+  //const detailArticle = await getDetailArticle(params.id);
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const res = await fetch(`${API_URL}/api/posts/${params.id}`, {
+    next: {
+      revalidate: 10, // ISR
+    }
+  });
+  const detailArticle = await res.json();
+  console.log(detailArticle);
 
   const getRandomImageUrl = (id: string) => {
     const numericValue = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
