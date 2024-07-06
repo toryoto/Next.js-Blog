@@ -1,10 +1,8 @@
 "use client";
 
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { editArticle, getDetailArticle } from '@/blogAPI';
 import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation';
-import { Article } from '@/types';
+import { useRouter } from 'next/navigation'
 
 type Inputs = {
   url: string,
@@ -34,7 +32,14 @@ function EditBlogPage({ params }: { params: {id:string} }) {
   useEffect(() => {
     const getArticle = async () => {
       try {
-        const article = await getDetailArticle(params.id);
+        // const article = await getDetailArticle(params.id);
+        const API_URL = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${API_URL}/api/posts/${params.id}`, {
+          next: {
+            revalidate: 10, // ISR
+          }
+        });
+        const article = await res.json();
 
         setValue("url", params.id);
         setValue("title", article.title);
@@ -50,13 +55,31 @@ function EditBlogPage({ params }: { params: {id:string} }) {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       setLoading(true);
-      await editArticle(data.url, data.title, data.content);
+      // await editArticle(data.url, data.title, data.content);
+
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${API_URL}/api/posts/${params.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: params.id, title: data.title, content: data.content }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to update post');
+      }
+  
+      const updatedPost = await res.json();
 
       // データの再検証
       await revalidateArticle(data.url);
       
       router.push(`/articles/${data.url}`);
       router.refresh();
+
+      return updatedPost;
     } catch (error) {
       console.log(error);
     } finally {
