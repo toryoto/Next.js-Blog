@@ -2,27 +2,63 @@ import { supabase } from "@/utils/supabaseClient";
 import { notFound } from "next/navigation";
 import { NextResponse } from 'next/server';
 
-// リクエスト/api/posts/123ではparams=123が渡される
-export async function GET(
+// api/posts/123のときのparamsは123
+export async function handler(
   req: Request,
-  // 分割代入でオブジェクトからparamsのみを取得
-  { params }: { params: { id:string } }
+  { params }: { params: { id: string } }
 ) {
-  try {
-    const { id } = params;
+  const { id } = params;
+  const method = req.method;
 
-    const { data, error } = await supabase.from("posts").select("*").eq("id", id).single();
+  switch(method) {
+    case "GET":
+      try {
+        const { data, error } = await supabase
+          .from("posts")
+          .select("*")
+          .eq("id", id)
+          .single();
+    
+        if (error) throw error;
+        if (!data) return notFound();
+    
+        return NextResponse.json(data);
+      } catch (error) {
+        console.error('Error fetching post:', error);
+        return NextResponse.json(
+          { error: 'An error occurred while fetching post' },
+          { status: 500 }
+        );
+      }
 
-    if (error) throw error;
+    case "DELETE":
+      console.log(`Attempting to delete post with id: ${id}`);
+      try {
+        const { error: fetchError } = await supabase
+          .from("posts")
+          .delete()
+          .eq("id", id);
 
-    if (!data) notFound();
+        if (fetchError) {
+          console.log(`Post with id ${id} not found`);
+          return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+        }
 
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error fetching post:', error);
-    return NextResponse.json(
-      { error: 'An error occurred while fetching post' },
-      { status: 500 }
-    );
+        return NextResponse.json({ message: 'Post deleted successfully' }, { status: 200 });
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        return NextResponse.json(
+          { error: 'An error occurred while deleting post' },
+          { status: 500 }
+        );    
+      }
   }
 }
+
+export { handler as GET, handler as DELETE, handler as PUT };
+
+
+// const { error: deleteError } = await supabase
+//           .from('posts')
+//           .delete()
+//           .match({ id });
