@@ -30,6 +30,28 @@ export async function handler(
           { status: 500 }
         );
       }
+    
+    case "PUT":
+      try {
+        const { id, title, content } = await req.json();
+
+        const { data, error } = await supabase
+          .from("posts")
+          .update([{ title, content, createdAt: new Date().toISOString() }])
+          .eq("id", id)
+          .select()
+          .single();
+        
+        if (error) throw error;
+
+        return NextResponse.json(data);
+      } catch (error) {
+        console.error('Error updating post:', error);
+        return NextResponse.json(
+          { error: 'An error occurred while updateing post' },
+          { status: 500 }
+        );    
+      }
 
     case "DELETE":
       console.log(`Attempting to delete post with id: ${id}`);
