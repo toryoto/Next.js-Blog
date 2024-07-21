@@ -19,7 +19,7 @@ function CreateBlogPage() {
 
   async function createPost(inputs: { url: string; title: string; content: string }) {
     try {
-      const API_URL = (process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : 'http://localhost:3000');
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
       console.log(API_URL);
       const res = await fetch(`${API_URL}/api/posts`, {
         method: 'POST',

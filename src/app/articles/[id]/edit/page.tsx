@@ -59,7 +59,7 @@ function EditBlogPage({ params }: { params: {id:string} }) {
       setLoading(true);
       // await editArticle(data.url, data.title, data.content);
 
-      const API_URL = (process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : 'http://localhost:3000');
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
       const res = await fetch(`${API_URL}/api/posts/${params.id}`, {
         method: 'PUT',
         headers: {

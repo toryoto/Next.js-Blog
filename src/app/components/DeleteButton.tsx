@@ -19,7 +19,7 @@ const DeleteButton = ({ id }: DeleteButtonProps) => {
         //await deleteArticle(id);
 
         // Supabaseを使用したブログ削除処理
-        const API_URL = (process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : 'http://localhost:3000');
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
         await fetch(`${API_URL}/api/posts/${id}`, {
           method: "DELETE",
         });

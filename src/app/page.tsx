@@ -3,7 +3,7 @@ import ArticleList from "./components/ArticleList";
 import { getAllArticles } from "@/blogAPI";
 
 export default async function Home() {
-  const API_URL = (process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : 'http://localhost:3000');
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
   const res = await fetch(`${API_URL}/api/posts`, { cache: "no-store" });
   const articles = await res.json();
